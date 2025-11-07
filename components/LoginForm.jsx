@@ -1,18 +1,21 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "@/lib/features/auth/authSlice";
 
 export default function LoginForm() {
     const router = useRouter();
+    const dispatch = useDispatch();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError(null);
+        setError("");
         try {
             const res = await fetch("/api/auth/login", {
                 method: "POST",
@@ -20,11 +23,17 @@ export default function LoginForm() {
                 body: JSON.stringify({ email, password }),
             });
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Login failed");
-            // store token locally (demo)
-            if (data.token) localStorage.setItem("token", data.token);
-            // redirect to home
-            router.push("/");
+            if (!data.ok) throw new Error(data.error || "Login failed");
+
+            // Simpan user ke Redux store
+            dispatch(loginSuccess(data.user));
+
+            // Redirect sesuai role
+            if (data.user.role === "admin") {
+                router.push("/admin");
+            } else {
+                router.push("/");
+            }
         } catch (err) {
             setError(err.message);
         } finally {
@@ -38,6 +47,7 @@ export default function LoginForm() {
                 <label className="block text-sm font-medium mb-1">Email</label>
                 <input
                     type="email"
+                    name="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -51,6 +61,7 @@ export default function LoginForm() {
                 </label>
                 <input
                     type="password"
+                    name="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
