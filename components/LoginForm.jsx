@@ -30,6 +30,11 @@ export default function LoginForm() {
             // Simpan user ke Redux store
             dispatch(loginSuccess(data.user));
 
+            // Set cookie agar middleware bisa baca role
+            document.cookie = `gohealth_user=${encodeURIComponent(
+                JSON.stringify(data.user),
+            )}; path=/;`;
+
             // Redirect sesuai role
             if (data.user.role === "admin") {
                 router.push("/admin");
