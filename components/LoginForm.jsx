@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { FaUserCircle } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
@@ -43,55 +44,69 @@ export default function LoginForm() {
     };
 
     return (
-        <>
-            <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4">
-                <div>
-                    <label className="block text-sm font-medium mb-1">
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="border p-2 w-full rounded"
-                    />
+        <div className="min-h-[80vh] flex items-center justify-center py-8">
+            <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-blue-100">
+                <div className="flex flex-col items-center mb-6">
+                    <div className="bg-blue-100 rounded-full p-3 mb-2">
+                        <FaUserCircle size={38} className="text-blue-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-blue-700">
+                        Masuk ke Akun Anda
+                    </h2>
+                    <p className="text-slate-500 text-sm mt-1">
+                        Selamat datang kembali! Silakan login untuk melanjutkan.
+                    </p>
                 </div>
-
-                <div className="mt-3">
-                    <label className="block text-sm font-medium mb-1">
-                        Password
-                    </label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        className="border p-2 w-full rounded"
-                    />
+                <form onSubmit={handleSubmit}>
+                    <div>
+                        <label className="block text-sm font-medium mb-1 text-blue-700">
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            placeholder="you@email.com"
+                        />
+                    </div>
+                    <div className="mt-4">
+                        <label className="block text-sm font-medium mb-1 text-blue-700">
+                            Password
+                        </label>
+                        <input
+                            type="password"
+                            name="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            placeholder="••••••••"
+                        />
+                    </div>
+                    {error && (
+                        <p className="text-red-600 mt-3 text-sm">{error}</p>
+                    )}
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="mt-6 w-full bg-blue-600 hover:bg-blue-700 transition text-white font-semibold py-2 rounded-lg shadow disabled:opacity-60">
+                        {loading ? "Masuk..." : "Masuk"}
+                    </button>
+                </form>
+                <div className="mt-6 text-center">
+                    <span className="text-sm text-slate-600">
+                        Belum punya akun?
+                    </span>
+                    <Link
+                        href="/register"
+                        className="ml-2 text-blue-600 hover:underline text-sm font-semibold">
+                        Daftar
+                    </Link>
                 </div>
-
-                {error && <p className="text-red-600 mt-2">{error}</p>}
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="mt-4 bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-60">
-                    {loading ? "Masuk..." : "Masuk"}
-                </button>
-            </form>
-            <div className="max-w-md mx-auto p-4 text-center">
-                <span className="text-sm text-slate-600">
-                    Belum punya akun?
-                </span>
-                <Link
-                    href="/register"
-                    className="ml-2 text-blue-600 hover:underline text-sm">
-                    Daftar
-                </Link>
             </div>
-        </>
+        </div>
     );
 }
