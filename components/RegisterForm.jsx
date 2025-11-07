@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
 import { FaUserPlus } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 export default function RegisterForm() {
     const router = useRouter();
@@ -177,6 +177,24 @@ export default function RegisterForm() {
             return;
         }
         setLoading(true);
+               
+        // Konfirmasi registrasi dengan SweetAlert
+        const result = await Swal.fire({
+            title: 'Konfirmasi Pendaftaran',
+            text: 'Pastikan semua data yang Anda masukkan sudah benar. Lanjutkan pendaftaran?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Daftar',
+            cancelButtonText: 'Periksa Lagi'
+        });
+
+        if (!result.isConfirmed) {
+            setLoading(false);
+            return;
+        }
+
         try {
             const res = await fetch("/api/auth/register", {
                 method: "POST",
@@ -199,8 +217,15 @@ export default function RegisterForm() {
             });
             const data = await res.json();
             if (!data.ok) throw new Error(data.error || "Register failed");
-            setSuccess("Registrasi berhasil! Silakan login.");
-            setTimeout(() => router.push("/login"), 1500);
+             
+            await Swal.fire({
+                title: 'Registrasi Berhasil!',
+                text: 'Akun Anda telah berhasil dibuat. Silakan login untuk melanjutkan.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+            
+            router.push("/login");
         } catch (err) {
             setError(err.message);
         } finally {

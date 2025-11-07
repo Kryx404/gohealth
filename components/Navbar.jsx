@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@/lib/features/auth/authSlice";
+import Swal from "sweetalert2";
 
 const Navbar = () => {
     const router = useRouter();
@@ -19,9 +20,31 @@ const Navbar = () => {
         router.push(`/shop?search=${search}`);
     };
 
-    const handleLogout = () => {
-        dispatch(logout());
-        router.push("/");
+    const handleLogout = async () => {
+        const result = await Swal.fire({
+            title: "Konfirmasi Logout",
+            text: "Apakah Anda yakin ingin keluar?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, Logout",
+            cancelButtonText: "Batal",
+        });
+
+        if (result.isConfirmed) {
+            dispatch(logout());
+            document.cookie =
+                "gohealth_user=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+            router.push("/");
+            Swal.fire({
+                title: "Logout Berhasil",
+                text: "Anda telah berhasil keluar",
+                icon: "success",
+                timer: 1500,
+                showConfirmButton: false,
+            });
+        }
     };
 
     return (
