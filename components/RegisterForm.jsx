@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+import { FaUserPlus } from "react-icons/fa";
+
 export default function RegisterForm() {
     const router = useRouter();
     const [email, setEmail] = useState("");
@@ -207,234 +209,285 @@ export default function RegisterForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4">
-            <div className="mt-3">
-                <label className="block text-sm font-medium mb-1">
-                    Username
-                </label>
-                <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                    className="border p-2 w-full rounded"
-                />
-            </div>
-            <div className="mt-3">
-                <label className="block text-sm font-medium mb-1">
-                    Full Name
-                </label>
-                <input
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required
-                    className="border p-2 w-full rounded"
-                />
-            </div>
-            <div className="mt-3">
-                <label className="block text-sm font-medium mb-1">Email</label>
-                <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="border p-2 w-full rounded"
-                />
-            </div>
-            <div className="mt-3">
-                <label className="block text-sm font-medium mb-1">
-                    Password
-                </label>
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="border p-2 w-full rounded"
-                />
-            </div>
-            <div className="mt-3">
-                <label className="block text-sm font-medium mb-1">
-                    Konfirmasi Password
-                </label>
-                <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    className="border p-2 w-full rounded"
-                />
-            </div>
+        <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-br py-8">
+            <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-8 border border-blue-100">
+                <div className="flex flex-col items-center mb-6">
+                    <div className="bg-blue-100 rounded-full p-3 mb-2">
+                        <FaUserPlus size={36} className="text-blue-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-blue-700">
+                        Buat Akun Baru
+                    </h2>
+                    <p className="text-slate-500 text-sm mt-1">
+                        Isi data diri lengkap untuk mendaftar.
+                    </p>
+                </div>
+                <form onSubmit={handleSubmit}>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-4">
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium mb-1 text-blue-700">
+                                Username
+                            </label>
+                            <input
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                required
+                                className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                placeholder="Username"
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium mb-1 text-blue-700">
+                                Full Name
+                            </label>
+                            <input
+                                type="text"
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
+                                required
+                                className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                placeholder="Nama lengkap"
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium mb-1 text-blue-700">
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                placeholder="you@email.com"
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium mb-1 text-blue-700">
+                                Password
+                            </label>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                placeholder="••••••••"
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium mb-1 text-blue-700">
+                                Konfirmasi Password
+                            </label>
+                            <input
+                                type="password"
+                                value={confirmPassword}
+                                onChange={(e) =>
+                                    setConfirmPassword(e.target.value)
+                                }
+                                required
+                                className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                placeholder="Ulangi password"
+                            />
+                        </div>
 
-            <div className="mt-3">
-                <label className="block text-sm font-medium mb-1">
-                    Tanggal Lahir
-                </label>
-                <input
-                    type="date"
-                    value={tanggalLahir}
-                    onChange={(e) => setTanggalLahir(e.target.value)}
-                    required
-                    className="border p-2 w-full rounded"
-                />
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium mb-1 text-blue-700">
+                                Tanggal Lahir
+                            </label>
+                            <input
+                                type="date"
+                                value={tanggalLahir}
+                                onChange={(e) =>
+                                    setTanggalLahir(e.target.value)
+                                }
+                                required
+                                className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium mb-1 text-blue-700">
+                                Gender
+                            </label>
+                            <select
+                                value={gender}
+                                onChange={(e) => setGender(e.target.value)}
+                                required
+                                className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                <option value="">Pilih gender</option>
+                                <option value="pria">Pria</option>
+                                <option value="wanita">Wanita</option>
+                            </select>
+                        </div>
+                        <div className="mb-3 lg:col-span-2">
+                            <label className="block text-sm font-medium mb-1 text-blue-700">
+                                Alamat
+                            </label>
+                            <input
+                                type="text"
+                                value={alamat}
+                                onChange={(e) => setAlamat(e.target.value)}
+                                required
+                                className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                placeholder="Alamat lengkap"
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium mb-1 text-blue-700">
+                                Provinsi
+                            </label>
+                            <select
+                                value={provinsi}
+                                onChange={(e) => {
+                                    const selectedCode = e.target.value;
+                                    const selectedProvinsi = provinsiList.find(
+                                        (p) => p.code === selectedCode,
+                                    );
+                                    setProvinsi(selectedCode);
+                                    setProvinsiName(
+                                        selectedProvinsi
+                                            ? selectedProvinsi.name
+                                            : "",
+                                    );
+                                }}
+                                required
+                                className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                <option value="">Pilih provinsi</option>
+                                {provinsiList.map((p) => (
+                                    <option key={p.code} value={p.code}>
+                                        {p.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium mb-1 text-blue-700">
+                                Kota
+                            </label>
+                            <select
+                                value={kota}
+                                onChange={(e) => {
+                                    const selectedCode = e.target.value;
+                                    const selectedKota = kotaList.find(
+                                        (k) => k.code === selectedCode,
+                                    );
+                                    setKota(selectedCode);
+                                    setKotaName(
+                                        selectedKota ? selectedKota.name : "",
+                                    );
+                                }}
+                                required
+                                disabled={!provinsi}
+                                className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50">
+                                <option value="">Pilih kota</option>
+                                {kotaList.map((k) => (
+                                    <option key={k.code} value={k.code}>
+                                        {k.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium mb-1 text-blue-700">
+                                Kecamatan
+                            </label>
+                            <select
+                                value={kecamatan}
+                                onChange={(e) => {
+                                    const selectedCode = e.target.value;
+                                    const selectedKecamatan =
+                                        kecamatanList.find(
+                                            (k) => k.code === selectedCode,
+                                        );
+                                    setKecamatan(selectedCode);
+                                    setKecamatanName(
+                                        selectedKecamatan
+                                            ? selectedKecamatan.name
+                                            : "",
+                                    );
+                                }}
+                                required
+                                disabled={!kota}
+                                className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50">
+                                <option value="">Pilih kecamatan</option>
+                                {kecamatanList.map((k) => (
+                                    <option key={k.code} value={k.code}>
+                                        {k.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium mb-1 text-blue-700">
+                                Kelurahan
+                            </label>
+                            <select
+                                value={kelurahan}
+                                onChange={(e) => {
+                                    const selectedCode = e.target.value;
+                                    const selectedKelurahan =
+                                        kelurahanList.find(
+                                            (k) => k.code === selectedCode,
+                                        );
+                                    setKelurahan(selectedCode);
+                                    setKelurahanName(
+                                        selectedKelurahan
+                                            ? selectedKelurahan.name
+                                            : "",
+                                    );
+                                }}
+                                required
+                                disabled={!kecamatan}
+                                className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50">
+                                <option value="">Pilih kelurahan</option>
+                                {kelurahanList.map((k) => (
+                                    <option key={k.code} value={k.code}>
+                                        {k.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium mb-1 text-blue-700">
+                                Nomor HP
+                            </label>
+                            <input
+                                type="text"
+                                value={nomerHp}
+                                onChange={(e) => setNomerHp(e.target.value)}
+                                required
+                                className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                placeholder="08xxxxxxxxxx"
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium mb-1 text-blue-700">
+                                Paypal ID (opsional)
+                            </label>
+                            <input
+                                type="text"
+                                value={paypalId}
+                                onChange={(e) => setPaypalId(e.target.value)}
+                                className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                placeholder="Paypal ID"
+                            />
+                        </div>
+                    </div>
+                    {error && (
+                        <p className="text-red-600 mt-2 text-sm">{error}</p>
+                    )}
+                    {success && (
+                        <p className="text-green-600 mt-2 text-sm">{success}</p>
+                    )}
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="mt-6 w-full bg-blue-600 hover:bg-blue-700 transition text-white font-semibold py-2 rounded-lg shadow disabled:opacity-60">
+                        {loading ? "Mendaftar..." : "Daftar"}
+                    </button>
+                </form>
             </div>
-            <div className="mt-3">
-                <label className="block text-sm font-medium mb-1">Gender</label>
-                <select
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
-                    required
-                    className="border p-2 w-full rounded">
-                    <option value="">Pilih gender</option>
-                    <option value="pria">Pria</option>
-                    <option value="wanita">Wanita</option>
-                </select>
-            </div>
-            <div className="mt-3">
-                <label className="block text-sm font-medium mb-1">Alamat</label>
-                <input
-                    type="text"
-                    value={alamat}
-                    onChange={(e) => setAlamat(e.target.value)}
-                    required
-                    className="border p-2 w-full rounded"
-                />
-            </div>
-            <div className="mt-3">
-                <label className="block text-sm font-medium mb-1">
-                    Provinsi
-                </label>
-                <select
-                    value={provinsi}
-                    onChange={(e) => {
-                        const selectedCode = e.target.value;
-                        const selectedProvinsi = provinsiList.find(
-                            (p) => p.code === selectedCode,
-                        );
-                        setProvinsi(selectedCode);
-                        setProvinsiName(
-                            selectedProvinsi ? selectedProvinsi.name : "",
-                        );
-                    }}
-                    required
-                    className="border p-2 w-full rounded">
-                    <option value="">Pilih provinsi</option>
-                    {provinsiList.map((p) => (
-                        <option key={p.code} value={p.code}>
-                            {p.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <div className="mt-3">
-                <label className="block text-sm font-medium mb-1">Kota</label>
-                <select
-                    value={kota}
-                    onChange={(e) => {
-                        const selectedCode = e.target.value;
-                        const selectedKota = kotaList.find(
-                            (k) => k.code === selectedCode,
-                        );
-                        setKota(selectedCode);
-                        setKotaName(selectedKota ? selectedKota.name : "");
-                    }}
-                    required
-                    disabled={!provinsi}
-                    className="border p-2 w-full rounded disabled:opacity-50">
-                    <option value="">Pilih kota</option>
-                    {kotaList.map((k) => (
-                        <option key={k.code} value={k.code}>
-                            {k.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <div className="mt-3">
-                <label className="block text-sm font-medium mb-1">
-                    Kecamatan
-                </label>
-                <select
-                    value={kecamatan}
-                    onChange={(e) => {
-                        const selectedCode = e.target.value;
-                        const selectedKecamatan = kecamatanList.find(
-                            (k) => k.code === selectedCode,
-                        );
-                        setKecamatan(selectedCode);
-                        setKecamatanName(
-                            selectedKecamatan ? selectedKecamatan.name : "",
-                        );
-                    }}
-                    required
-                    disabled={!kota}
-                    className="border p-2 w-full rounded disabled:opacity-50">
-                    <option value="">Pilih kecamatan</option>
-                    {kecamatanList.map((k) => (
-                        <option key={k.code} value={k.code}>
-                            {k.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <div className="mt-3">
-                <label className="block text-sm font-medium mb-1">
-                    Kelurahan
-                </label>
-                <select
-                    value={kelurahan}
-                    onChange={(e) => {
-                        const selectedCode = e.target.value;
-                        const selectedKelurahan = kelurahanList.find(
-                            (k) => k.code === selectedCode,
-                        );
-                        setKelurahan(selectedCode);
-                        setKelurahanName(
-                            selectedKelurahan ? selectedKelurahan.name : "",
-                        );
-                    }}
-                    required
-                    disabled={!kecamatan}
-                    className="border p-2 w-full rounded disabled:opacity-50">
-                    <option value="">Pilih kelurahan</option>
-                    {kelurahanList.map((k) => (
-                        <option key={k.code} value={k.code}>
-                            {k.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <div className="mt-3">
-                <label className="block text-sm font-medium mb-1">
-                    Nomor HP
-                </label>
-                <input
-                    type="text"
-                    value={nomerHp}
-                    onChange={(e) => setNomerHp(e.target.value)}
-                    required
-                    className="border p-2 w-full rounded"
-                />
-            </div>
-            <div className="mt-3">
-                <label className="block text-sm font-medium mb-1">
-                    Paypal ID (opsional)
-                </label>
-                <input
-                    type="text"
-                    value={paypalId}
-                    onChange={(e) => setPaypalId(e.target.value)}
-                    className="border p-2 w-full rounded"
-                />
-            </div>
-            {error && <p className="text-red-600 mt-2">{error}</p>}
-            {success && <p className="text-green-600 mt-2">{success}</p>}
-            <button
-                type="submit"
-                disabled={loading}
-                className="mt-4 bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-60">
-                {loading ? "Mendaftar..." : "Daftar"}
-            </button>
-        </form>
+        </div>
     );
 }
