@@ -5,9 +5,32 @@ import { HomeIcon, PlusCircleIcon, PackageIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { assets } from "@/assets/assets";
+import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 const AdminSidebar = () => {
     const pathname = usePathname();
+    const authUser = useSelector((state) => state.auth.user);
+    const [userData, setUserData] = useState(null);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (authUser?.id) {
+                const { data, error } = await supabase
+                    .from("users")
+                    .select("*")
+                    .eq("id", authUser.id)
+                    .single();
+
+                if (data && !error) {
+                    setUserData(data);
+                }
+            }
+        };
+
+        fetchUserData();
+    }, [authUser]);
 
     const sidebarLinks = [
         { name: "Dashboard", href: "/admin", icon: HomeIcon },
@@ -28,12 +51,14 @@ const AdminSidebar = () => {
             <div className="flex flex-col gap-3 justify-center items-center pt-8 max-sm:hidden">
                 <Image
                     className="w-14 h-14 rounded-full"
-                    src={assets.gs_logo}
+                    src={userData?.image || assets.gs_logo}
                     alt=""
                     width={80}
                     height={80}
                 />
-                <p className="text-slate-700">Hi, GreatStack</p>
+                <p className="text-slate-700">
+                    Hi, {userData?.username || "Admin"}
+                </p>
             </div>
 
             <div className="max-sm:mt-6">
