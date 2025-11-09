@@ -25,7 +25,7 @@ const BestSelling = () => {
                 .order("rating", { ascending: false }) // pastikan ada kolom rating, jika tidak, ganti dengan kolom lain
                 .limit(displayQuantity);
             if (!error && data) {
-                // Map gambar utama
+                // Map gambar utama dan rating dari DB
                 const mapped = data.map((p) => ({
                     ...p,
                     image:
@@ -33,6 +33,9 @@ const BestSelling = () => {
                         p.product_images.length > 0
                             ? p.product_images[0].url
                             : null,
+                    rating: [
+                        { rating: typeof p.rating === "number" ? p.rating : 0 },
+                    ],
                 }));
                 setProducts(mapped);
             }
@@ -56,12 +59,18 @@ const BestSelling = () => {
                 {loading ? (
                     <div>Loading...</div>
                 ) : (
-                    products.map((product, index) => (
-                        <ProductCard
-                            key={product.id || index}
-                            product={product}
-                        />
-                    ))
+                    products.map((product, index) => {
+                        // Format harga: tanpa Rp, tanpa angka di belakang koma
+                        let formattedPrice = new Intl.NumberFormat("id-ID", {
+                            maximumFractionDigits: 0,
+                        }).format(product.price);
+                        return (
+                            <ProductCard
+                                key={product.id || index}
+                                product={{ ...product, price: formattedPrice }}
+                            />
+                        );
+                    })
                 )}
             </div>
         </div>
