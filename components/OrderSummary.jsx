@@ -2,6 +2,7 @@ import { PlusIcon, SquarePenIcon, XIcon } from "lucide-react";
 import React, { useState } from "react";
 import AddressModal from "./AddressModal";
 import { useSelector } from "react-redux";
+import supabase from "@/lib/supabaseClient";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
@@ -10,7 +11,38 @@ const OrderSummary = ({ totalPrice, items }) => {
 
     const router = useRouter();
 
-    const addressList = useSelector((state) => state.address.list);
+    // const addressList = useSelector((state) => state.address.list);
+    const user = useSelector((state) => state.auth.user);
+    const [addressList, setAddressList] = useState([]);
+
+    // Fetch alamat dari tabel users kolom alamat
+    React.useEffect(() => {
+        const fetchAddress = async () => {
+            if (!user?.id) return;
+            const { data, error } = await supabase
+                .from("users")
+                .select(
+                    "alamat, kota, provinsi, kelurahan, kecamatan, nomer_hp, full_name",
+                )
+                .eq("id", user.id)
+                .single();
+            if (!error && data) {
+                // Buat array address, meski 1, agar konsisten
+                setAddressList([
+                    {
+                        name: data.full_name,
+                        alamat: data.alamat,
+                        kota: data.kota,
+                        provinsi: data.provinsi,
+                        kelurahan: data.kelurahan,
+                        kecamatan: data.kecamatan,
+                        nomer_hp: data.nomer_hp,
+                    },
+                ]);
+            }
+        };
+        fetchAddress();
+    }, [user]);
 
     const [paymentMethod, setPaymentMethod] = useState("COD");
     const [selectedAddress, setSelectedAddress] = useState(null);
@@ -56,7 +88,7 @@ const OrderSummary = ({ totalPrice, items }) => {
                     className="accent-gray-500"
                 />
                 <label htmlFor="STRIPE" className="cursor-pointer">
-                    Stripe Payment
+                    Transfer
                 </label>
             </div>
             <div className="my-4 py-4 border-y border-slate-200 text-slate-400">
@@ -86,8 +118,7 @@ const OrderSummary = ({ totalPrice, items }) => {
                                 <option value="">Select Address</option>
                                 {addressList.map((address, index) => (
                                     <option key={index} value={index}>
-                                        {address.name}, {address.city},{" "}
-                                        {address.state}, {address.zip}
+                                        {address.alamat}
                                     </option>
                                 ))}
                             </select>
@@ -121,41 +152,7 @@ const OrderSummary = ({ totalPrice, items }) => {
                         )}
                     </div>
                 </div>
-                {!coupon ? (
-                    <form
-                        onSubmit={(e) =>
-                            toast.promise(handleCouponCode(e), {
-                                loading: "Checking Coupon...",
-                            })
-                        }
-                        className="flex justify-center gap-3 mt-3">
-                        <input
-                            onChange={(e) => setCouponCodeInput(e.target.value)}
-                            value={couponCodeInput}
-                            type="text"
-                            placeholder="Coupon Code"
-                            className="border border-slate-400 p-1.5 rounded w-full outline-none"
-                        />
-                        <button className="bg-slate-600 text-white px-3 rounded hover:bg-slate-800 active:scale-95 transition-all">
-                            Apply
-                        </button>
-                    </form>
-                ) : (
-                    <div className="w-full flex items-center justify-center gap-2 text-xs mt-2">
-                        <p>
-                            Code:{" "}
-                            <span className="font-semibold ml-1">
-                                {coupon.code.toUpperCase()}
-                            </span>
-                        </p>
-                        <p>{coupon.description}</p>
-                        <XIcon
-                            size={18}
-                            onClick={() => setCoupon("")}
-                            className="hover:text-red-700 transition cursor-pointer"
-                        />
-                    </div>
-                )}
+               
             </div>
             <div className="flex justify-between py-4">
                 <p>Total:</p>
