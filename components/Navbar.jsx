@@ -48,7 +48,7 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="relative bg-white">
+        <nav className="sticky bg-white top-0 z-50 shadow">
             <div className="mx-6">
                 <div className="flex items-center justify-between max-w-7xl mx-auto py-4  transition-all">
                     <Link
@@ -65,10 +65,10 @@ const Navbar = () => {
 
                     {/* Desktop Menu */}
                     <div className="hidden sm:flex items-center gap-4 lg:gap-8 text-slate-600">
-                        <Link href="/">Home</Link>
-                        <Link href="/shop">Shop</Link>
-                        <Link href="/">About</Link>
-                        <Link href="/">Contact</Link>
+                        {/* <Link href="/">Home</Link>
+                        <Link href="/shop">Shop</Link> */}
+                        {/* <Link href="/">About</Link>
+                        <Link href="/">Contact</Link> */}
 
                         <form
                             onSubmit={handleSearch}
