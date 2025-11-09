@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import supabase from "@/lib/supabaseClient";
@@ -11,6 +11,7 @@ export default function AdminAddProduct() {
     const [loading, setLoading] = useState(false);
     const [images, setImages] = useState([]);
     const [imageUrl, setImageUrl] = useState("");
+    const [categories, setCategories] = useState([]);
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -19,6 +20,18 @@ export default function AdminAddProduct() {
         rating: 0,
         category: "",
     });
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            const { data, error } = await supabase
+                .from("categories")
+                .select("id, name");
+            if (!error && data) {
+                setCategories(data);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -90,10 +103,7 @@ export default function AdminAddProduct() {
 
             if (productError) throw productError;
 
-            // 2. Upload images and insert into product_images
             const imageUploadPromises = images.map(async (img, index) => {
-                // For demo, we'll use the preview URL directly
-                // In production, you should upload to storage first
                 const imageUrl = img.preview;
 
                 return supabase.from("product_images").insert({
@@ -260,14 +270,18 @@ export default function AdminAddProduct() {
                         <label className="block text-sm font-medium text-slate-700 mb-2">
                             Category
                         </label>
-                        <input
-                            type="text"
+                        <select
                             name="category"
                             value={formData.category}
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                            placeholder="e.g., Electronics"
-                        />
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Select category</option>
+                            {categories.map((cat) => (
+                                <option key={cat.id} value={cat.name}>
+                                    {cat.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                 </div>
 
