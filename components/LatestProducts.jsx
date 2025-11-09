@@ -55,12 +55,18 @@ const LatestProducts = () => {
                 {loading ? (
                     <div>Loading...</div>
                 ) : (
-                    products.map((product, index) => (
-                        <ProductCard
-                            key={product.id || index}
-                            product={product}
-                        />
-                    ))
+                    products.map((product, index) => {
+                        // Format harga: tanpa Rp, tanpa angka di belakang koma
+                        let formattedPrice = new Intl.NumberFormat("id-ID", {
+                            maximumFractionDigits: 0,
+                        }).format(product.price);
+                        return (
+                            <ProductCard
+                                key={product.id || index}
+                                product={{ ...product, price: formattedPrice }}
+                            />
+                        );
+                    })
                 )}
             </div>
         </div>
