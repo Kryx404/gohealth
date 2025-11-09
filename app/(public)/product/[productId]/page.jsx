@@ -26,7 +26,9 @@ export default function Product() {
                 const mapped = {
                     id: data.id,
                     name: data.title,
-                    price: data.price,
+                    price: new Intl.NumberFormat("id-ID", {
+                        maximumFractionDigits: 0,
+                    }).format(data.price),
                     images:
                         data.product_images?.length > 0
                             ? data.product_images.map((img) => img.url)
