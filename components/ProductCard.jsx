@@ -7,8 +7,13 @@ import React from "react";
 const ProductCard = ({ product }) => {
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$";
 
-    // Safely handle rating array
-    const ratingArray = Array.isArray(product.rating) ? product.rating : [];
+    // Safely handle rating array (accept array or number for compatibility)
+    let ratingArray = [];
+    if (Array.isArray(product.rating)) {
+        ratingArray = product.rating;
+    } else if (typeof product.rating === "number") {
+        ratingArray = [{ rating: product.rating }];
+    }
     const averageRating =
         ratingArray.length > 0
             ? Math.round(
