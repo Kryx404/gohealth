@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { FaUserPlus } from "react-icons/fa";
+import { FaUserPlus, FaEye, FaEyeSlash } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 export default function RegisterForm() {
@@ -32,6 +32,8 @@ export default function RegisterForm() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [passwordMatch, setPasswordMatch] = useState(null); // null, true, or false
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     // Check password match in real-time
     useEffect(() => {
@@ -304,14 +306,30 @@ export default function RegisterForm() {
                             <label className="block text-sm font-medium mb-1 text-blue-700">
                                 Password
                             </label>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                placeholder="••••••••"
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
+                                    required
+                                    className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400 pr-10"
+                                    placeholder="••••••••"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setShowPassword(!showPassword)
+                                    }
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700">
+                                    {showPassword ? (
+                                        <FaEyeSlash size={18} />
+                                    ) : (
+                                        <FaEye size={18} />
+                                    )}
+                                </button>
+                            </div>
                         </div>
                         <div className="mb-3">
                             <label className="block text-sm font-medium mb-1 text-blue-700">
@@ -319,13 +337,17 @@ export default function RegisterForm() {
                             </label>
                             <div className="relative">
                                 <input
-                                    type="password"
+                                    type={
+                                        showConfirmPassword
+                                            ? "text"
+                                            : "password"
+                                    }
                                     value={confirmPassword}
                                     onChange={(e) =>
                                         setConfirmPassword(e.target.value)
                                     }
                                     required
-                                    className={`border p-2 w-full rounded focus:outline-none focus:ring-2 pr-10 ${
+                                    className={`border p-2 w-full rounded focus:outline-none focus:ring-2 pr-20 ${
                                         passwordMatch === null
                                             ? "border-blue-200 focus:ring-blue-400"
                                             : passwordMatch
@@ -334,37 +356,53 @@ export default function RegisterForm() {
                                     }`}
                                     placeholder="Ulangi password"
                                 />
-                                {passwordMatch !== null && (
-                                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                        {passwordMatch ? (
-                                            <svg
-                                                className="w-5 h-5 text-green-600"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M5 13l4 4L19 7"
-                                                />
-                                            </svg>
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                                    {passwordMatch !== null && (
+                                        <div>
+                                            {passwordMatch ? (
+                                                <svg
+                                                    className="w-5 h-5 text-green-600"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M5 13l4 4L19 7"
+                                                    />
+                                                </svg>
+                                            ) : (
+                                                <svg
+                                                    className="w-5 h-5 text-red-600"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M6 18L18 6M6 6l12 12"
+                                                    />
+                                                </svg>
+                                            )}
+                                        </div>
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setShowConfirmPassword(
+                                                !showConfirmPassword,
+                                            )
+                                        }
+                                        className="text-slate-500 hover:text-slate-700">
+                                        {showConfirmPassword ? (
+                                            <FaEyeSlash size={18} />
                                         ) : (
-                                            <svg
-                                                className="w-5 h-5 text-red-600"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M6 18L18 6M6 6l12 12"
-                                                />
-                                            </svg>
+                                            <FaEye size={18} />
                                         )}
-                                    </div>
-                                )}
+                                    </button>
+                                </div>
                             </div>
                             {passwordMatch === false && (
                                 <p className="text-red-600 text-xs mt-1">
