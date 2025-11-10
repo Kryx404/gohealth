@@ -61,16 +61,19 @@ const OrderSummary = ({ totalPrice, items }) => {
 
         // Validasi user sudah login
         if (!user || !user.id) {
+            toast.error("Please login to place order");
             throw new Error("Please login to place order");
         }
 
         // Validasi address sudah dipilih
         if (!selectedAddress) {
+            toast.error("Please select delivery address");
             throw new Error("Please select delivery address");
         }
 
         // Validasi items tidak kosong
         if (!items || items.length === 0) {
+            toast.error("Your cart is empty");
             throw new Error("Your cart is empty");
         }
 
