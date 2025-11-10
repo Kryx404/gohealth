@@ -1,15 +1,17 @@
 import { PlusIcon, SquarePenIcon, XIcon } from "lucide-react";
 import React, { useState } from "react";
 import AddressModal from "./AddressModal";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import supabase from "@/lib/supabaseClient";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { clearCart } from "@/lib/features/cart/cartSlice";
 
 const OrderSummary = ({ totalPrice, items }) => {
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$";
 
     const router = useRouter();
+    const dispatch = useDispatch();
 
     // const addressList = useSelector((state) => state.address.list);
     const user = useSelector((state) => state.auth.user);
@@ -57,7 +59,75 @@ const OrderSummary = ({ totalPrice, items }) => {
     const handlePlaceOrder = async (e) => {
         e.preventDefault();
 
-        router.push("/orders");
+        // Validasi user sudah login
+        if (!user || !user.id) {
+            throw new Error("Please login to place order");
+        }
+
+        // Validasi address sudah dipilih
+        if (!selectedAddress) {
+            throw new Error("Please select delivery address");
+        }
+
+        // Validasi items tidak kosong
+        if (!items || items.length === 0) {
+            throw new Error("Your cart is empty");
+        }
+
+        // Prepare order data
+        const orderData = {
+            userId: user.id,
+            total: coupon
+                ? totalPrice - (coupon.discount / 100) * totalPrice
+                : totalPrice,
+            paymentMethod: paymentMethod,
+            address: selectedAddress,
+            isCouponUsed: !!coupon,
+            coupon: coupon || null,
+            orderItems: items.map((item) => ({
+                productId: item.id,
+                name: item.title || item.name, // Gunakan title dari products table
+                quantity: item.quantity,
+                price: item.price,
+            })),
+        };
+
+        console.log("Sending order data:", orderData);
+
+        // Call API to create order
+        const response = await fetch("/api/orders", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(orderData),
+        });
+
+        const result = await response.json();
+
+        console.log("API Response:", result);
+        console.log("Response status:", response.status);
+        console.log("Response ok:", response.ok);
+
+        if (!response.ok) {
+            const errorMessage =
+                result.details || result.error || "Failed to place order";
+            console.error("Order failed:", errorMessage);
+            throw new Error(errorMessage);
+        }
+
+        // Clear cart setelah order berhasil
+        console.log("Clearing cart...");
+        dispatch(clearCart());
+        console.log("Cart cleared successfully");
+
+        // Redirect ke halaman orders setelah delay kecil
+        setTimeout(() => {
+            console.log("Redirecting to orders page...");
+            router.push("/orders");
+        }, 1500);
+
+        return result;
     };
 
     return (
@@ -81,13 +151,13 @@ const OrderSummary = ({ totalPrice, items }) => {
             <div className="flex gap-2 items-center mt-1">
                 <input
                     type="radio"
-                    id="STRIPE"
+                    id="TRANSFER"
                     name="payment"
-                    onChange={() => setPaymentMethod("STRIPE")}
-                    checked={paymentMethod === "STRIPE"}
+                    onChange={() => setPaymentMethod("TRANSFER")}
+                    checked={paymentMethod === "TRANSFER"}
                     className="accent-gray-500"
                 />
-                <label htmlFor="STRIPE" className="cursor-pointer">
+                <label htmlFor="TRANSFER" className="cursor-pointer">
                     Transfer
                 </label>
             </div>
@@ -152,7 +222,6 @@ const OrderSummary = ({ totalPrice, items }) => {
                         )}
                     </div>
                 </div>
-               
             </div>
             <div className="flex justify-between py-4">
                 <p>Total:</p>
@@ -167,11 +236,13 @@ const OrderSummary = ({ totalPrice, items }) => {
                 </p>
             </div>
             <button
-                onClick={(e) =>
+                onClick={(e) => {
                     toast.promise(handlePlaceOrder(e), {
-                        loading: "placing Order...",
-                    })
-                }
+                        loading: "Placing order...",
+                        success: "Order placed successfully!",
+                        error: (err) => err.message || "Failed to place order",
+                    });
+                }}
                 className="w-full bg-slate-700 text-white py-2.5 rounded hover:bg-slate-900 active:scale-95 transition-all">
                 Place Order
             </button>
