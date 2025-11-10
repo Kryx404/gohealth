@@ -1,5 +1,5 @@
 "use client";
-import { Search, ShoppingCart, Package } from "lucide-react";
+import { Search, ShoppingCart, Package, UserCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -102,6 +102,12 @@ const Navbar = () => {
                                     className="relative flex items-center gap-2 text-slate-600">
                                     <Package size={18} />
                                     Orders
+                                </Link>
+                                <Link
+                                    href="/profile"
+                                    className="relative flex items-center gap-2 text-slate-600">
+                                    <UserCircle size={18} />
+                                    Profile
                                 </Link>
                             </>
                         )}
