@@ -5,6 +5,7 @@ import {
     CircleDollarSignIcon,
     ShoppingBasketIcon,
     TagsIcon,
+    PackageCheckIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import supabase from "@/lib/supabaseClient";
@@ -16,7 +17,8 @@ export default function AdminDashboard() {
     const [dashboardData, setDashboardData] = useState({
         products: 0,
         revenue: 0,
-        orders: 0,
+        totalOrders: 0,
+        deliveredOrders: 0,
         allOrders: [],
     });
 
@@ -31,7 +33,16 @@ export default function AdminDashboard() {
             value: dashboardData.revenue,
             icon: CircleDollarSignIcon,
         },
-        { title: "Total Orders", value: dashboardData.orders, icon: TagsIcon },
+        {
+            title: "Total Orders",
+            value: dashboardData.totalOrders,
+            icon: TagsIcon,
+        },
+        {
+            title: "Delivered Orders",
+            value: dashboardData.deliveredOrders,
+            icon: PackageCheckIcon,
+        },
     ];
 
     const fetchDashboardData = async () => {
@@ -43,15 +54,16 @@ export default function AdminDashboard() {
                 .from("products")
                 .select("*", { count: "exact", head: true });
 
-            // Get total active products (assuming you want to count them)
-            const { data: products } = await supabase
-                .from("products")
-                .select("price, stock");
+            // Get all orders with DELIVERED status for revenue calculation
+            const { data: deliveredOrders } = await supabase
+                .from("pembelian")
+                .select("total")
+                .eq("status", "DELIVERED");
 
-            // Calculate total revenue (sum of all product prices * stock)
+            // Calculate total revenue from delivered orders only
             const revenue =
-                products?.reduce((acc, product) => {
-                    return acc + product.price * (product.stock || 0);
+                deliveredOrders?.reduce((acc, order) => {
+                    return acc + (order.total || 0);
                 }, 0) || 0;
 
             // Format revenue to Rupiah
@@ -62,17 +74,29 @@ export default function AdminDashboard() {
                 maximumFractionDigits: 0,
             }).format(revenue);
 
-            // Get orders if you have orders table (placeholder for now)
-            const ordersCount = 0; // You can fetch from orders table if exists
+            // Get count of DELIVERED orders
+            const { count: deliveredOrdersCount } = await supabase
+                .from("pembelian")
+                .select("*", { count: "exact", head: true })
+                .eq("status", "DELIVERED");
 
-            // Get all orders for chart (placeholder - adjust based on your orders table)
-            const allOrders = []; // You can fetch from orders table if exists
+            // Get count of ALL orders (any status)
+            const { count: totalOrdersCount } = await supabase
+                .from("pembelian")
+                .select("*", { count: "exact", head: true });
+
+            // Get all orders for chart
+            const { data: allOrders } = await supabase
+                .from("pembelian")
+                .select("*")
+                .order("created_at", { ascending: true });
 
             setDashboardData({
                 products: productsCount || 0,
                 revenue: formattedRevenue,
-                orders: ordersCount,
-                allOrders: allOrders,
+                totalOrders: totalOrdersCount || 0,
+                deliveredOrders: deliveredOrdersCount || 0,
+                allOrders: allOrders || [],
             });
         } catch (error) {
             console.error("Error fetching dashboard data:", error);
@@ -95,7 +119,7 @@ export default function AdminDashboard() {
             </h1>
 
             {/* Cards */}
-            <div className="flex flex-wrap gap-20 my-10 mt-4">
+            <div className="flex flex-wrap gap-4 my-10 mt-4">
                 {dashboardCardsData.map((card, index) => (
                     <div
                         key={index}
