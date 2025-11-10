@@ -1,5 +1,5 @@
 "use client";
-import { Search, ShoppingCart } from "lucide-react";
+import { Search, ShoppingCart, Package } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -85,15 +85,25 @@ const Navbar = () => {
                         </form>
 
                         {isLoggedIn && (
-                            <Link
-                                href="/cart"
-                                className="relative flex items-center gap-2 text-slate-600">
-                                <ShoppingCart size={18} />
-                                Cart
-                                <button className="absolute -top-1 left-3 text-[8px] text-white bg-slate-600 size-3.5 rounded-full">
-                                    {cartCount}
-                                </button>
-                            </Link>
+                            <>
+                                <Link
+                                    href="/cart"
+                                    className="relative flex items-center gap-2 text-slate-600">
+                                    <ShoppingCart size={18} />
+                                    Cart
+                                    {cartCount > 0 && (
+                                        <span className="absolute -top-1 left-3 text-[8px] text-white bg-slate-600 size-3.5 rounded-full flex items-center justify-center">
+                                            {cartCount}
+                                        </span>
+                                    )}
+                                </Link>
+                                <Link
+                                    href="/orders"
+                                    className="relative flex items-center gap-2 text-slate-600">
+                                    <Package size={18} />
+                                    Orders
+                                </Link>
+                            </>
                         )}
 
                         {isLoggedIn ? (
