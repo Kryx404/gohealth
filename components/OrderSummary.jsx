@@ -6,6 +6,7 @@ import supabase from "@/lib/supabaseClient";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { clearCart } from "@/lib/features/cart/cartSlice";
+import { generateInvoicePDF } from "@/lib/generateInvoice";
 
 const OrderSummary = ({ totalPrice, items }) => {
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$";
@@ -117,6 +118,39 @@ const OrderSummary = ({ totalPrice, items }) => {
                 result.details || result.error || "Failed to place order";
             console.error("Order failed:", errorMessage);
             throw new Error(errorMessage);
+        }
+
+        // Generate Invoice PDF
+        try {
+            const invoiceData = {
+                orderId:
+                    result.pembelian?.id ||
+                    result.orders?.[0]?.pembelian_id ||
+                    "N/A",
+                customerName: user.full_name || user.name || "Customer",
+                customerEmail: user.email || "",
+                customerPhone: selectedAddress.nomer_hp || "",
+                paymentMethod: paymentMethod,
+                status: "ORDER_RECEIVED",
+                address: selectedAddress,
+                items: items.map((item) => ({
+                    name: item.title || item.name,
+                    quantity: item.quantity,
+                    price: item.price,
+                })),
+                subtotal: totalPrice,
+                discount: coupon ? (coupon.discount / 100) * totalPrice : 0,
+                total: coupon
+                    ? totalPrice - (coupon.discount / 100) * totalPrice
+                    : totalPrice,
+            };
+
+            generateInvoicePDF(invoiceData);
+            toast.success("Invoice PDF generated successfully!");
+        } catch (pdfError) {
+            console.error("Error generating PDF:", pdfError);
+            // Jangan fail order kalau PDF gagal
+            toast.warning("Order placed but invoice generation failed");
         }
 
         // Clear cart setelah order berhasil
