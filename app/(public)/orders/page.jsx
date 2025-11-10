@@ -11,6 +11,17 @@ export default function Orders() {
     const [loading, setLoading] = useState(true);
     const user = useSelector((state) => state.auth.user);
 
+    // Format number to Rupiah
+    const formatRupiah = (number) => {
+        return (
+            "Rp " +
+            new Intl.NumberFormat("id-ID", {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+            }).format(number)
+        );
+    };
+
     useEffect(() => {
         const fetchOrders = async () => {
             if (!user?.id) {
@@ -78,7 +89,7 @@ export default function Orders() {
                                     </div>
                                     <div className="text-right">
                                         <p className="text-lg font-semibold text-slate-800">
-                                            ${order.total?.toFixed(2) || "0.00"}
+                                            {formatRupiah(order.total || 0)}
                                         </p>
                                         <span className="inline-block px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
                                             {order.status || "ORDER_PLACED"}
@@ -112,10 +123,16 @@ export default function Orders() {
                                                     Quantity: {item.kuantitas}
                                                 </p>
                                                 <p className="text-sm text-slate-500">
-                                                    Price: ${item.harga_unit}
+                                                    Price:{" "}
+                                                    {formatRupiah(
+                                                        item.harga_unit,
+                                                    )}
                                                 </p>
                                                 <p className="text-sm font-medium text-slate-700">
-                                                    Subtotal: ${item.subtotal}
+                                                    Subtotal:{" "}
+                                                    {formatRupiah(
+                                                        item.subtotal,
+                                                    )}
                                                 </p>
                                             </div>
                                         </div>

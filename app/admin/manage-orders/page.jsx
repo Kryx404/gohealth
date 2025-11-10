@@ -9,6 +9,17 @@ export default function AdminOrders() {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    // Format number to Rupiah without "Rp" and without trailing zeros
+    const formatRupiah = (number) => {
+        return (
+            "Rp " +
+            new Intl.NumberFormat("id-ID", {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+            }).format(number)
+        );
+    };
+
     const fetchAllOrders = async () => {
         try {
             // Untuk admin, fetch semua orders (tanpa filter userId)
@@ -121,7 +132,7 @@ export default function AdminOrders() {
                                             order.user_id}
                                     </td>
                                     <td className="px-4 py-3 font-medium text-slate-800">
-                                        ${order.total}
+                                        {formatRupiah(order.total)}
                                     </td>
                                     <td className="px-4 py-3">
                                         {order.metode_pembayaran}
@@ -259,11 +270,16 @@ export default function AdminOrders() {
                                                     {item.nama_produk}
                                                 </p>
                                                 <p className="text-sm text-slate-600">
-                                                    Qty: {item.kuantitas} × $
-                                                    {item.harga_unit}
+                                                    Qty: {item.kuantitas} ×{" "}
+                                                    {formatRupiah(
+                                                        item.harga_unit,
+                                                    )}
                                                 </p>
                                                 <p className="text-sm font-medium">
-                                                    Subtotal: ${item.subtotal}
+                                                    Subtotal:{" "}
+                                                    {formatRupiah(
+                                                        item.subtotal,
+                                                    )}
                                                 </p>
                                             </div>
                                         </div>
@@ -283,7 +299,7 @@ export default function AdminOrders() {
                             <p className="text-lg mt-2">
                                 <span className="font-medium">Total:</span>{" "}
                                 <span className="text-green-600 font-bold">
-                                    ${selectedOrder.total}
+                                    {formatRupiah(selectedOrder.total)}
                                 </span>
                             </p>
                         </div>
