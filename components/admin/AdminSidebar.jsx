@@ -1,7 +1,12 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { HomeIcon, PlusCircleIcon, PackageIcon } from "lucide-react";
+import {
+    HomeIcon,
+    PlusCircleIcon,
+    PackageIcon,
+    TruckIcon,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { assets } from "@/assets/assets";
@@ -43,6 +48,11 @@ const AdminSidebar = () => {
             name: "Manage Products",
             href: "/admin/manage-products",
             icon: PackageIcon,
+        },
+        {
+            name: "Manage Orders",
+            href: "/admin/manage-orders",
+            icon: TruckIcon,
         },
     ];
 

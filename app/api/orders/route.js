@@ -163,7 +163,8 @@ export async function GET(request) {
         // Fetch dari tabel pembelian dengan join ke pembelian_items
         const { data, error } = await supabase
             .from("pembelian")
-            .select(`
+            .select(
+                `
                 id,
                 user_id,
                 total,
@@ -192,7 +193,8 @@ export async function GET(request) {
                         product_images (url)
                     )
                 )
-            `)
+            `,
+            )
             .eq("user_id", userId)
             .order("created_at", { ascending: false });
 
@@ -231,15 +233,19 @@ export async function PATCH(request) {
         // Validasi status yang diperbolehkan
         const allowedStatuses = [
             "ORDER_RECEIVED",
-            "PROCESSING", 
-            "SHIPPED", 
+            "PROCESSING",
+            "SHIPPED",
             "DELIVERED",
-            "CANCELLED"
+            "CANCELLED",
         ];
-        
+
         if (!allowedStatuses.includes(status)) {
             return NextResponse.json(
-                { error: "Invalid status. Allowed statuses: " + allowedStatuses.join(", ") },
+                {
+                    error:
+                        "Invalid status. Allowed statuses: " +
+                        allowedStatuses.join(", "),
+                },
                 { status: 400 },
             );
         }
@@ -255,7 +261,10 @@ export async function PATCH(request) {
         if (error) {
             console.error("Error updating order status:", error);
             return NextResponse.json(
-                { error: "Failed to update order status", details: error.message },
+                {
+                    error: "Failed to update order status",
+                    details: error.message,
+                },
                 { status: 500 },
             );
         }
