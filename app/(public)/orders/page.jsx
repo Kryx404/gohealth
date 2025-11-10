@@ -5,6 +5,9 @@ import OrderItem from "@/components/OrderItem";
 import { orderDummyData } from "@/assets/assets";
 import { useSelector } from "react-redux";
 import Loading from "@/components/Loading";
+import { Download } from "lucide-react";
+import { generateInvoicePDF } from "@/lib/generateInvoice";
+import { toast } from "react-toastify";
 
 export default function Orders() {
     const [orders, setOrders] = useState([]);
@@ -68,6 +71,41 @@ export default function Orders() {
 
         fetchOrders();
     }, [user]);
+
+    const handleDownloadInvoice = (order) => {
+        try {
+            const invoiceData = {
+                orderId: order.id,
+                customerName: user.full_name || user.name || "Customer",
+                customerEmail: user.email || "",
+                customerPhone: user.nomer_hp || "",
+                paymentMethod: order.metode_pembayaran || "COD",
+                status: order.status || "ORDER_RECEIVED",
+                address: {
+                    alamat: user.alamat || "",
+                    kelurahan: user.kelurahan || "",
+                    kecamatan: user.kecamatan || "",
+                    kota: user.kota || "",
+                    provinsi: user.provinsi || "",
+                },
+                items:
+                    order.pembelian_items?.map((item) => ({
+                        name: item.nama_produk,
+                        quantity: item.kuantitas,
+                        price: item.harga_unit,
+                    })) || [],
+                subtotal: order.total,
+                discount: 0,
+                total: order.total,
+            };
+
+            generateInvoicePDF(invoiceData, false);
+            toast.success("Invoice downloaded successfully!");
+        } catch (error) {
+            console.error("Error generating invoice:", error);
+            toast.error("Failed to download invoice");
+        }
+    };
 
     if (loading) {
         return <Loading />;
@@ -162,13 +200,21 @@ export default function Orders() {
                                 </div>
 
                                 {/* Payment Method */}
-                                <div className="mt-4 pt-4 border-t">
+                                <div className="mt-4 pt-4 border-t flex justify-between items-center">
                                     <p className="text-sm text-slate-600">
                                         <span className="font-medium">
                                             Payment Method:
                                         </span>{" "}
                                         {order.metode_pembayaran || "COD"}
                                     </p>
+                                    <button
+                                        onClick={() =>
+                                            handleDownloadInvoice(order)
+                                        }
+                                        className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition shadow-sm">
+                                        <Download size={16} />
+                                        Download Invoice
+                                    </button>
                                 </div>
                             </div>
                         ))}
