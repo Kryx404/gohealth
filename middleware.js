@@ -13,22 +13,32 @@ export function middleware(request) {
     }
 
     const pathname = request.nextUrl.pathname;
+    const searchParams = request.nextUrl.searchParams;
 
     // Proteksi route /login - user yang sudah login tidak bisa akses
-    if (pathname === "/login" && user) {
-        // Redirect sesuai role
-        if (user.role === "admin") {
-            return NextResponse.redirect(new URL("/admin", request.url));
-        } else {
-            return NextResponse.redirect(new URL("/", request.url));
-        }
+    // TAPI: skip jika ada toast parameter (artinya user baru di-redirect dengan pesan error)
+    if (pathname === "/login" && user && !searchParams.has("toast")) {
+        const redirectUrl = new URL(
+            user.role === "admin" ? "/admin" : "/",
+            request.url,
+        );
+        redirectUrl.searchParams.set("toast", "already_logged_in");
+        return NextResponse.redirect(redirectUrl);
     }
 
     // Proteksi route /admin - hanya untuk admin
     if (pathname.startsWith("/admin")) {
-        if (!user || user.role !== "admin") {
-            // Redirect ke login jika tidak ada user atau bukan admin
-            return NextResponse.redirect(new URL("/login", request.url));
+        if (!user) {
+            // User belum login, redirect ke login
+            const redirectUrl = new URL("/login", request.url);
+            return NextResponse.redirect(redirectUrl);
+        }
+
+        if (user.role !== "admin") {
+            // User biasa coba akses admin, redirect dengan toast
+            const redirectUrl = new URL("/", request.url);
+            redirectUrl.searchParams.set("toast", "admin_only");
+            return NextResponse.redirect(redirectUrl);
         }
     }
 
@@ -46,8 +56,9 @@ export function middleware(request) {
     );
 
     if (isPublicRoute && user && user.role === "admin") {
-        // Redirect admin ke dashboard admin
-        return NextResponse.redirect(new URL("/admin", request.url));
+        const redirectUrl = new URL("/admin", request.url);
+        redirectUrl.searchParams.set("toast", "admin_no_public");
+        return NextResponse.redirect(redirectUrl);
     }
 
     return NextResponse.next();
