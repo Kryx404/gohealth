@@ -31,6 +31,18 @@ export default function RegisterForm() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [passwordMatch, setPasswordMatch] = useState(null); // null, true, or false
+
+    // Check password match in real-time
+    useEffect(() => {
+        if (confirmPassword === "") {
+            setPasswordMatch(null); // No indicator when empty
+        } else if (password === confirmPassword) {
+            setPasswordMatch(true); // Match
+        } else {
+            setPasswordMatch(false); // Not match
+        }
+    }, [password, confirmPassword]);
 
     // Fetch provinsi list from wilayah.id API
     useEffect(() => {
@@ -177,17 +189,17 @@ export default function RegisterForm() {
             return;
         }
         setLoading(true);
-               
+
         // Konfirmasi registrasi dengan SweetAlert
         const result = await Swal.fire({
-            title: 'Konfirmasi Pendaftaran',
-            text: 'Pastikan semua data yang Anda masukkan sudah benar. Lanjutkan pendaftaran?',
-            icon: 'question',
+            title: "Konfirmasi Pendaftaran",
+            text: "Pastikan semua data yang Anda masukkan sudah benar. Lanjutkan pendaftaran?",
+            icon: "question",
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, Daftar',
-            cancelButtonText: 'Periksa Lagi'
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, Daftar",
+            cancelButtonText: "Periksa Lagi",
         });
 
         if (!result.isConfirmed) {
@@ -217,14 +229,14 @@ export default function RegisterForm() {
             });
             const data = await res.json();
             if (!data.ok) throw new Error(data.error || "Register failed");
-             
+
             await Swal.fire({
-                title: 'Registrasi Berhasil!',
-                text: 'Akun Anda telah berhasil dibuat. Silakan login untuk melanjutkan.',
-                icon: 'success',
-                confirmButtonText: 'OK'
+                title: "Registrasi Berhasil!",
+                text: "Akun Anda telah berhasil dibuat. Silakan login untuk melanjutkan.",
+                icon: "success",
+                confirmButtonText: "OK",
             });
-            
+
             router.push("/login");
         } catch (err) {
             setError(err.message);
@@ -305,16 +317,65 @@ export default function RegisterForm() {
                             <label className="block text-sm font-medium mb-1 text-blue-700">
                                 Konfirmasi Password
                             </label>
-                            <input
-                                type="password"
-                                value={confirmPassword}
-                                onChange={(e) =>
-                                    setConfirmPassword(e.target.value)
-                                }
-                                required
-                                className="border border-blue-200 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                placeholder="Ulangi password"
-                            />
+                            <div className="relative">
+                                <input
+                                    type="password"
+                                    value={confirmPassword}
+                                    onChange={(e) =>
+                                        setConfirmPassword(e.target.value)
+                                    }
+                                    required
+                                    className={`border p-2 w-full rounded focus:outline-none focus:ring-2 pr-10 ${
+                                        passwordMatch === null
+                                            ? "border-blue-200 focus:ring-blue-400"
+                                            : passwordMatch
+                                            ? "border-green-300 focus:ring-green-400 bg-green-50"
+                                            : "border-red-300 focus:ring-red-400 bg-red-50"
+                                    }`}
+                                    placeholder="Ulangi password"
+                                />
+                                {passwordMatch !== null && (
+                                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                        {passwordMatch ? (
+                                            <svg
+                                                className="w-5 h-5 text-green-600"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M5 13l4 4L19 7"
+                                                />
+                                            </svg>
+                                        ) : (
+                                            <svg
+                                                className="w-5 h-5 text-red-600"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M6 18L18 6M6 6l12 12"
+                                                />
+                                            </svg>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                            {passwordMatch === false && (
+                                <p className="text-red-600 text-xs mt-1">
+                                    ✗ Password tidak sama
+                                </p>
+                            )}
+                            {passwordMatch === true && (
+                                <p className="text-green-600 text-xs mt-1">
+                                    ✓ Password sama
+                                </p>
+                            )}
                         </div>
 
                         <div className="mb-3">
