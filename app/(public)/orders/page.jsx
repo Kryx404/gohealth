@@ -22,6 +22,24 @@ export default function Orders() {
         );
     };
 
+    // Get status badge color
+    const getStatusColor = (status) => {
+        switch (status) {
+            case "ORDER_RECEIVED":
+                return "bg-blue-100 text-blue-700";
+            case "PROCESSING":
+                return "bg-yellow-100 text-yellow-700";
+            case "SHIPPED":
+                return "bg-purple-100 text-purple-700";
+            case "DELIVERED":
+                return "bg-green-100 text-green-700";
+            case "CANCELLED":
+                return "bg-red-100 text-red-700";
+            default:
+                return "bg-gray-100 text-gray-700";
+        }
+    };
+
     useEffect(() => {
         const fetchOrders = async () => {
             if (!user?.id) {
@@ -91,8 +109,12 @@ export default function Orders() {
                                         <p className="text-lg font-semibold text-slate-800">
                                             {formatRupiah(order.total || 0)}
                                         </p>
-                                        <span className="inline-block px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
-                                            {order.status || "ORDER_PLACED"}
+                                        <span
+                                            className={`inline-block px-3 py-1 text-xs rounded-full font-medium ${getStatusColor(
+                                                order.status,
+                                            )}`}>
+                                            {order.status?.replace(/_/g, " ") ||
+                                                "ORDER PLACED"}
                                         </span>
                                     </div>
                                 </div>

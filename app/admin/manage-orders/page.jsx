@@ -20,6 +20,24 @@ export default function AdminOrders() {
         );
     };
 
+    // Get status badge color
+    const getStatusColor = (status) => {
+        switch (status) {
+            case "ORDER_RECEIVED":
+                return "bg-blue-100 text-blue-700";
+            case "PROCESSING":
+                return "bg-yellow-100 text-yellow-700";
+            case "SHIPPED":
+                return "bg-purple-100 text-purple-700";
+            case "DELIVERED":
+                return "bg-green-100 text-green-700";
+            case "CANCELLED":
+                return "bg-red-100 text-red-700";
+            default:
+                return "bg-gray-100 text-gray-700";
+        }
+    };
+
     const fetchAllOrders = async () => {
         try {
             // Untuk admin, fetch semua orders (tanpa filter userId)
@@ -148,7 +166,9 @@ export default function AdminOrders() {
                                                     e.target.value,
                                                 )
                                             }
-                                            className="border-gray-300 rounded-md text-sm focus:ring focus:ring-blue-200 px-2 py-1">
+                                            className={`rounded-md text-sm font-medium px-3 py-1.5 border-0 focus:ring-2 focus:ring-offset-1 ${getStatusColor(
+                                                order.status,
+                                            )}`}>
                                             <option value="ORDER_RECEIVED">
                                                 ORDER RECEIVED
                                             </option>
@@ -212,15 +232,10 @@ export default function AdminOrders() {
                             <p>
                                 <span className="font-medium">Status:</span>
                                 <span
-                                    className={`ml-2 px-3 py-1 rounded-full text-xs ${
-                                        selectedOrder.status === "DELIVERED"
-                                            ? "bg-green-100 text-green-700"
-                                            : selectedOrder.status ===
-                                              "CANCELLED"
-                                            ? "bg-red-100 text-red-700"
-                                            : "bg-blue-100 text-blue-700"
-                                    }`}>
-                                    {selectedOrder.status}
+                                    className={`ml-2 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                                        selectedOrder.status,
+                                    )}`}>
+                                    {selectedOrder.status?.replace(/_/g, " ")}
                                 </span>
                             </p>
                         </div>
