@@ -120,7 +120,7 @@ const OrderSummary = ({ totalPrice, items }) => {
             throw new Error(errorMessage);
         }
 
-        // Generate Invoice PDF
+        // Generate Invoice PDF & Send Email
         try {
             const invoiceData = {
                 orderId:
@@ -145,11 +145,38 @@ const OrderSummary = ({ totalPrice, items }) => {
                     : totalPrice,
             };
 
-            generateInvoicePDF(invoiceData);
-            toast.success("Invoice PDF generated successfully!");
+            // Generate PDF for download
+            generateInvoicePDF(invoiceData, false);
+
+            // Generate PDF as base64 for email
+            const pdfBase64 = generateInvoicePDF(invoiceData, true);
+
+            // Send invoice email
+            const emailResponse = await fetch("/api/send-invoice", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    to: user.email,
+                    subject: `Invoice - Order #${invoiceData.orderId}`,
+                    orderId: invoiceData.orderId,
+                    customerName: invoiceData.customerName,
+                    items: invoiceData.items,
+                    total: invoiceData.total,
+                    paymentMethod: invoiceData.paymentMethod,
+                    pdfBase64: pdfBase64,
+                }),
+            });
+
+            if (emailResponse.ok) {
+                toast.success("Invoice sent to your email!");
+            } else {
+                toast.warning("Order placed but email sending failed");
+            }
         } catch (pdfError) {
-            console.error("Error generating PDF:", pdfError);
-            // Jangan fail order kalau PDF gagal
+            console.error("Error generating PDF or sending email:", pdfError);
+            // Jangan fail order kalau PDF/email gagal
             toast.warning("Order placed but invoice generation failed");
         }
 
