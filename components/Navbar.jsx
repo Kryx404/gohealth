@@ -2,7 +2,7 @@
 import { Search, ShoppingCart, Package, UserCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@/lib/features/auth/authSlice";
 import Swal from "sweetalert2";
@@ -12,8 +12,14 @@ const Navbar = () => {
     const dispatch = useDispatch();
 
     const [search, setSearch] = useState("");
+    const [mounted, setMounted] = useState(false);
     const cartCount = useSelector((state) => state.cart.total);
     const { isLoggedIn, user } = useSelector((state) => state.auth);
+
+    // Fix hydration error - only render client-specific content after mount
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -84,7 +90,7 @@ const Navbar = () => {
                             />
                         </form>
 
-                        {isLoggedIn && (
+                        {mounted && isLoggedIn && (
                             <>
                                 <Link
                                     href="/cart"
@@ -112,36 +118,38 @@ const Navbar = () => {
                             </>
                         )}
 
-                        {isLoggedIn ? (
-                            <button
-                                onClick={handleLogout}
-                                className="px-8 py-2 bg-red-500 hover:bg-red-600 transition text-white rounded-full">
-                                Logout
-                            </button>
-                        ) : (
-                            <Link
-                                href="/login"
-                                className="px-8 py-2 bg-indigo-500 hover:bg-indigo-600 transition text-white rounded-full">
-                                Login
-                            </Link>
-                        )}
+                        {mounted &&
+                            (isLoggedIn ? (
+                                <button
+                                    onClick={handleLogout}
+                                    className="px-8 py-2 bg-red-500 hover:bg-red-600 transition text-white rounded-full">
+                                    Logout
+                                </button>
+                            ) : (
+                                <Link
+                                    href="/login"
+                                    className="px-8 py-2 bg-indigo-500 hover:bg-indigo-600 transition text-white rounded-full">
+                                    Login
+                                </Link>
+                            ))}
                     </div>
 
                     {/* Mobile User Button  */}
                     <div className="sm:hidden">
-                        {isLoggedIn ? (
-                            <button
-                                onClick={handleLogout}
-                                className="px-7 py-1.5 bg-red-500 hover:bg-red-600 text-sm transition text-white rounded-full">
-                                Logout
-                            </button>
-                        ) : (
-                            <Link
-                                href="/login"
-                                className="px-7 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-sm transition text-white rounded-full">
-                                Login
-                            </Link>
-                        )}
+                        {mounted &&
+                            (isLoggedIn ? (
+                                <button
+                                    onClick={handleLogout}
+                                    className="px-7 py-1.5 bg-red-500 hover:bg-red-600 text-sm transition text-white rounded-full">
+                                    Logout
+                                </button>
+                            ) : (
+                                <Link
+                                    href="/login"
+                                    className="px-7 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-sm transition text-white rounded-full">
+                                    Login
+                                </Link>
+                            ))}
                     </div>
                 </div>
             </div>
