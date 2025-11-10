@@ -3,6 +3,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import StoreProvider from "@/app/StoreProvider";
 import ToastHandler from "@/components/ToastHandler";
+import ActivityTracker from "@/components/ActivityTracker";
 import { Suspense } from "react";
 import "./globals.css";
 
@@ -21,6 +22,7 @@ export default function RootLayout({ children }) {
                     <Suspense fallback={null}>
                         <ToastHandler />
                     </Suspense>
+                    <ActivityTracker />
                     <ToastContainer position="top-right" autoClose={8000} />
                     {children}
                 </StoreProvider>
