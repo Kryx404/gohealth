@@ -70,17 +70,21 @@ export default function AdminAddProduct() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("🚀 Form submitted!");
 
         if (!formData.title || !formData.price || images.length === 0) {
+            console.log("❌ Validation failed");
             toast.error(
                 "Please fill all required fields and add at least one image",
             );
             return;
         }
 
+        console.log("✅ Validation passed, starting insert...");
         setLoading(true);
 
         try {
+            console.log("📝 Inserting product...");
             // 1. Insert product
             const slug = formData.title
                 .toLowerCase()
@@ -101,8 +105,14 @@ export default function AdminAddProduct() {
                 .select()
                 .single();
 
-            if (productError) throw productError;
+            if (productError) {
+                console.log("❌ Product insert error:", productError);
+                throw productError;
+            }
+            
+            console.log("✅ Product inserted:", productData.id);
 
+            console.log("📸 Inserting images...");
             const imageUploadPromises = images.map(async (img, index) => {
                 const imageUrl = img.preview;
 
@@ -115,9 +125,11 @@ export default function AdminAddProduct() {
             });
 
             await Promise.all(imageUploadPromises);
+            console.log("✅ Images inserted");
 
             // 3. Insert category if provided
             if (formData.category) {
+                console.log("🏷️ Inserting category...");
                 // First, check if category exists
                 const { data: categoryData } = await supabase
                     .from("categories")
@@ -141,7 +153,10 @@ export default function AdminAddProduct() {
                             .select()
                             .single();
 
-                    if (catError) throw catError;
+                    if (catError) {
+                        console.log("❌ Category insert error:", catError);
+                        throw catError;
+                    }
                     categoryId = newCategory.id;
                 }
 
@@ -150,10 +165,11 @@ export default function AdminAddProduct() {
                     product_id: productData.id,
                     category_id: categoryId,
                 });
+                console.log("✅ Category linked");
             }
 
-            toast.success("Product added successfully!");
-
+            console.log("🎉 Everything successful! Resetting form...");
+            
             // Reset form
             setFormData({
                 title: "",
@@ -164,14 +180,24 @@ export default function AdminAddProduct() {
                 category: "",
             });
             setImages([]);
+            setLoading(false);
 
-            setTimeout(() => {
-                router.push("/admin");
-            }, 1500);
+            console.log("📢 Calling toast.success...");
+            
+            // Show toast without redirect
+            toast.success("Product added successfully!", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+
+            console.log("Toast called");
         } catch (error) {
             console.error("Error adding product:", error);
             toast.error("Failed to add product: " + error.message);
-        } finally {
             setLoading(false);
         }
     };

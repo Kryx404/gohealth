@@ -228,15 +228,20 @@ export default function AdminEditProduct() {
                 });
             }
 
-            toast.success("Product updated successfully!");
+            setSaving(false);
 
+            // Show toast and redirect after delay
+            toast.success("Product updated successfully!", {
+                autoClose: 2000,
+            });
+
+            // Redirect after toast is shown
             setTimeout(() => {
                 router.push("/admin/manage-products");
-            }, 1500);
+            }, 500);
         } catch (error) {
             console.error("Error updating product:", error);
             toast.error("Failed to update product: " + error.message);
-        } finally {
             setSaving(false);
         }
     };
