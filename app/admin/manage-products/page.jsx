@@ -5,12 +5,14 @@ import Image from "next/image";
 import supabase from "@/lib/supabaseClient";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
+import { Search } from "lucide-react";
 
 export default function AdminManageProducts() {
     const router = useRouter();
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$";
     const [loading, setLoading] = useState(true);
     const [products, setProducts] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
 
     const fetchProducts = async () => {
         setLoading(true);
@@ -88,6 +90,11 @@ export default function AdminManageProducts() {
         fetchProducts();
     }, []);
 
+    // Filter products based on search query
+    const filteredProducts = products.filter((product) =>
+        product.title.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[50vh]">
@@ -98,14 +105,30 @@ export default function AdminManageProducts() {
 
     return (
         <div className="max-w-7xl mx-auto p-6">
-            <h1 className="text-2xl text-slate-500 mb-6">
-                Manage{" "}
-                <span className="text-slate-800 font-medium">Products</span>
-            </h1>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl text-slate-500">
+                    Manage{" "}
+                    <span className="text-slate-800 font-medium">Products</span>
+                </h1>
 
-            {products.length === 0 ? (
+                {/* Search Input */}
+                <div className="flex gap-2 relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <input
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent w-64"
+                    />
+                </div>
+            </div>
+
+            {filteredProducts.length === 0 ? (
                 <div className="text-center text-slate-400 py-20">
-                    No products found. Add your first product!
+                    {searchQuery
+                        ? `No products found matching "${searchQuery}"`
+                        : "No products found. Add your first product!"}
                 </div>
             ) : (
                 <div className="overflow-x-auto">
@@ -122,7 +145,7 @@ export default function AdminManageProducts() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200">
-                            {products.map((product) => (
+                            {filteredProducts.map((product) => (
                                 <tr
                                     key={product.id}
                                     className="hover:bg-slate-50">
