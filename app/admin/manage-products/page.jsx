@@ -5,7 +5,7 @@ import Image from "next/image";
 import supabase from "@/lib/supabaseClient";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function AdminManageProducts() {
     const router = useRouter();
@@ -13,6 +13,8 @@ export default function AdminManageProducts() {
     const [loading, setLoading] = useState(true);
     const [products, setProducts] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const productsPerPage = 10;
 
     const fetchProducts = async () => {
         setLoading(true);
@@ -95,6 +97,25 @@ export default function AdminManageProducts() {
         product.title.toLowerCase().includes(searchQuery.toLowerCase()),
     );
 
+    // Pagination logic
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+    const indexOfLastProduct = currentPage * productsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+    const currentProducts = filteredProducts.slice(
+        indexOfFirstProduct,
+        indexOfLastProduct,
+    );
+
+    // Reset to page 1 when search query changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery]);
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[50vh]">
@@ -124,99 +145,188 @@ export default function AdminManageProducts() {
                 </div>
             </div>
 
-            {filteredProducts.length === 0 ? (
+            {/* Showing info */}
+            {filteredProducts.length > 0 && (
+                <div className="text-sm text-slate-500 mb-4">
+                    Showing {indexOfFirstProduct + 1} to{" "}
+                    {Math.min(indexOfLastProduct, filteredProducts.length)} of{" "}
+                    {filteredProducts.length} products
+                </div>
+            )}
+
+            {currentProducts.length === 0 ? (
                 <div className="text-center text-slate-400 py-20">
                     {searchQuery
                         ? `No products found matching "${searchQuery}"`
                         : "No products found. Add your first product!"}
                 </div>
             ) : (
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left ring ring-slate-200 rounded overflow-hidden text-sm">
-                        <thead className="bg-slate-50 text-gray-700 uppercase tracking-wider">
-                            <tr>
-                                <th className="px-4 py-3">Image</th>
-                                <th className="px-4 py-3">Title</th>
-                                <th className="px-4 py-3">Price</th>
-                                <th className="px-4 py-3">Stock</th>
-                                <th className="px-4 py-3">Rating</th>
-                                <th className="px-4 py-3">Status</th>
-                                <th className="px-4 py-3">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-200">
-                            {filteredProducts.map((product) => (
-                                <tr
-                                    key={product.id}
-                                    className="hover:bg-slate-50">
-                                    <td className="px-4 py-3">
-                                        <Image
-                                            src={
-                                                product.product_images?.[0]
-                                                    ?.url || "/no-image.png"
-                                            }
-                                            alt={product.title}
-                                            width={50}
-                                            height={50}
-                                            className="w-12 h-12 object-cover rounded"
-                                        />
-                                    </td>
-                                    <td className="px-4 py-3 max-w-xs truncate">
-                                        {product.title}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        {currency}
-                                        {product.price}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        {product.stock || 0}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        ⭐ {product.rating || 0}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <button
-                                            onClick={() =>
-                                                toggleActive(
-                                                    product.id,
-                                                    product.is_active,
-                                                )
-                                            }
-                                            className={`px-3 py-1 rounded text-xs font-medium ${
-                                                product.is_active
-                                                    ? "bg-green-100 text-green-700"
-                                                    : "bg-red-100 text-red-700"
-                                            }`}>
-                                            {product.is_active
-                                                ? "Active"
-                                                : "Inactive"}
-                                        </button>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <div className="flex gap-2">
+                <>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left ring ring-slate-200 rounded overflow-hidden text-sm">
+                            <thead className="bg-slate-50 text-gray-700 uppercase tracking-wider">
+                                <tr>
+                                    <th className="px-4 py-3">Image</th>
+                                    <th className="px-4 py-3">Title</th>
+                                    <th className="px-4 py-3">Price</th>
+                                    <th className="px-4 py-3">Stock</th>
+                                    <th className="px-4 py-3">Rating</th>
+                                    <th className="px-4 py-3">Status</th>
+                                    <th className="px-4 py-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-200">
+                                {currentProducts.map((product) => (
+                                    <tr
+                                        key={product.id}
+                                        className="hover:bg-slate-50">
+                                        <td className="px-4 py-3">
+                                            <Image
+                                                src={
+                                                    product.product_images?.[0]
+                                                        ?.url || "/no-image.png"
+                                                }
+                                                alt={product.title}
+                                                width={50}
+                                                height={50}
+                                                className="w-12 h-12 object-cover rounded"
+                                            />
+                                        </td>
+                                        <td className="px-4 py-3 max-w-xs truncate">
+                                            {product.title}
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            {currency}
+                                            {product.price}
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            {product.stock || 0}
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            ⭐ {product.rating || 0}
+                                        </td>
+                                        <td className="px-4 py-3">
                                             <button
                                                 onClick={() =>
-                                                    router.push(
-                                                        `/admin/edit-product/${product.id}`,
+                                                    toggleActive(
+                                                        product.id,
+                                                        product.is_active,
                                                     )
                                                 }
-                                                className="bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600 active:scale-95 transition">
-                                                Edit
+                                                className={`px-3 py-1 rounded text-xs font-medium ${
+                                                    product.is_active
+                                                        ? "bg-green-100 text-green-700"
+                                                        : "bg-red-100 text-red-700"
+                                                }`}>
+                                                {product.is_active
+                                                    ? "Active"
+                                                    : "Inactive"}
                                             </button>
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() =>
+                                                        router.push(
+                                                            `/admin/edit-product/${product.id}`,
+                                                        )
+                                                    }
+                                                    className="bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600 active:scale-95 transition">
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        deleteProduct(
+                                                            product.id,
+                                                        )
+                                                    }
+                                                    className="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 active:scale-95 transition">
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className="flex items-center justify-center gap-2 mt-6">
+                            {/* Previous Button */}
+                            <button
+                                onClick={() =>
+                                    handlePageChange(currentPage - 1)
+                                }
+                                disabled={currentPage === 1}
+                                className={`flex items-center gap-1 px-3 py-2 rounded-lg border transition ${
+                                    currentPage === 1
+                                        ? "border-slate-200 text-slate-400 cursor-not-allowed"
+                                        : "border-slate-300 text-slate-700 hover:bg-slate-50"
+                                }`}>
+                                <ChevronLeft className="w-4 h-4" />
+                                Previous
+                            </button>
+
+                            {/* Page Numbers */}
+                            <div className="flex gap-1">
+                                {[...Array(totalPages)].map((_, index) => {
+                                    const pageNumber = index + 1;
+                                    // Show first page, last page, current page, and pages around current
+                                    if (
+                                        pageNumber === 1 ||
+                                        pageNumber === totalPages ||
+                                        (pageNumber >= currentPage - 1 &&
+                                            pageNumber <= currentPage + 1)
+                                    ) {
+                                        return (
                                             <button
+                                                key={pageNumber}
                                                 onClick={() =>
-                                                    deleteProduct(product.id)
+                                                    handlePageChange(pageNumber)
                                                 }
-                                                className="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 active:scale-95 transition">
-                                                Delete
+                                                className={`px-4 py-2 rounded-lg border transition ${
+                                                    currentPage === pageNumber
+                                                        ? "bg-green-500 text-white border-green-500"
+                                                        : "border-slate-300 text-slate-700 hover:bg-slate-50"
+                                                }`}>
+                                                {pageNumber}
                                             </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                                        );
+                                    } else if (
+                                        pageNumber === currentPage - 2 ||
+                                        pageNumber === currentPage + 2
+                                    ) {
+                                        return (
+                                            <span
+                                                key={pageNumber}
+                                                className="px-2 py-2 text-slate-400">
+                                                ...
+                                            </span>
+                                        );
+                                    }
+                                    return null;
+                                })}
+                            </div>
+
+                            {/* Next Button */}
+                            <button
+                                onClick={() =>
+                                    handlePageChange(currentPage + 1)
+                                }
+                                disabled={currentPage === totalPages}
+                                className={`flex items-center gap-1 px-3 py-2 rounded-lg border transition ${
+                                    currentPage === totalPages
+                                        ? "border-slate-200 text-slate-400 cursor-not-allowed"
+                                        : "border-slate-300 text-slate-700 hover:bg-slate-50"
+                                }`}>
+                                Next
+                                <ChevronRight className="w-4 h-4" />
+                            </button>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );
