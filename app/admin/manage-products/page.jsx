@@ -16,6 +16,11 @@ export default function AdminManageProducts() {
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 10;
 
+    // Format price to Indonesian Rupiah format (e.g., 100.000)
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat("id-ID").format(price);
+    };
+
     const fetchProducts = async () => {
         setLoading(true);
         const { data, error } = await supabase
@@ -196,8 +201,8 @@ export default function AdminManageProducts() {
                                             {product.title}
                                         </td>
                                         <td className="px-4 py-3">
-                                            {currency}
-                                            {product.price}
+                                            {currency}{" "}
+                                            {formatPrice(product.price)}
                                         </td>
                                         <td className="px-4 py-3">
                                             {product.stock || 0}
