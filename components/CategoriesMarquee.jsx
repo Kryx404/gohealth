@@ -1,15 +1,14 @@
-import { useEffect, useState } from "react";
+"use client";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import dynamic from "next/dynamic";
 
-const CategoriesMarquee = () => {
+function CategoriesMarqueeContent() {
     const [categories, setCategories] = useState([]);
     const router = useRouter();
     const searchParams = useSearchParams();
     const selectedCategory = searchParams.get("category");
-
-
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -42,11 +41,7 @@ const CategoriesMarquee = () => {
                                     : ""
                             }`}
                             title={company}
-                            onClick={() =>
-                                router.push(
-                                    `/`,
-                                )
-                            }>
+                            onClick={() => router.push(`/`)}>
                             {company}
                         </button>
                     ))}
@@ -55,6 +50,23 @@ const CategoriesMarquee = () => {
             </div>
             {selectedCategory && <CategoryProducts />}
         </>
+    );
+}
+
+const CategoriesMarquee = () => {
+    return (
+        <Suspense
+            fallback={
+                <div className="overflow-hidden w-full relative max-w-7xl mx-auto select-none sm:my-20">
+                    <div className="flex gap-4 justify-center items-center py-2">
+                        <div className="px-5 py-2 bg-slate-100 rounded-lg text-slate-500 text-xs sm:text-sm animate-pulse">
+                            Loading categories...
+                        </div>
+                    </div>
+                </div>
+            }>
+            <CategoriesMarqueeContent />
+        </Suspense>
     );
 };
 
