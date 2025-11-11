@@ -19,6 +19,7 @@ const ProductDetails = ({ product }) => {
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$";
 
     const cart = useSelector((state) => state.cart.cartItems);
+    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
     const dispatch = useDispatch();
 
     const router = useRouter();
@@ -31,6 +32,11 @@ const ProductDetails = ({ product }) => {
     const [mainImage, setMainImage] = useState(imagesArray[0]);
 
     const addToCartHandler = () => {
+        // Check if user is logged in
+        if (!isLoggedIn) {
+            router.push("/login");
+            return;
+        }
         dispatch(addToCart({ productId }));
     };
 
