@@ -42,6 +42,18 @@ export function middleware(request) {
         }
     }
 
+    // Proteksi route /cart dan /orders - hanya untuk user yang sudah login
+    const protectedUserRoutes = ["/cart", "/orders"];
+    const isProtectedUserRoute = protectedUserRoutes.some(
+        (route) => pathname === route || pathname.startsWith(route + "/"),
+    );
+
+    if (isProtectedUserRoute && !user) {
+        // User belum login, redirect ke login
+        const redirectUrl = new URL("/login", request.url);
+        return NextResponse.redirect(redirectUrl);
+    }
+
     // Proteksi route public - admin tidak bisa akses (kecuali logout)
     const publicRoutes = [
         "/",
