@@ -7,6 +7,7 @@ import {
     PackageIcon,
     TruckIcon,
     UsersIcon,
+    TagIcon,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -49,6 +50,11 @@ const AdminSidebar = () => {
             name: "Manage Products",
             href: "/admin/manage-products",
             icon: PackageIcon,
+        },
+        {
+            name: "Manage Categories",
+            href: "/admin/manage-categories",
+            icon: TagIcon,
         },
         {
             name: "Manage Orders",
